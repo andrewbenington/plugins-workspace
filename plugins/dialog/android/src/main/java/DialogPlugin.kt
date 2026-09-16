@@ -60,7 +60,7 @@ class DialogPlugin(private val activity: Activity): Plugin(activity) {
       val parsedTypes = parseFiltersOption(args.filters)
 
       // TODO: ACTION_OPEN_DOCUMENT ??
-      val intent = Intent(Intent.ACTION_GET_CONTENT)
+      val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
       intent.addCategory(Intent.CATEGORY_OPENABLE)
 
       if (args.pickerMode == "image") {
@@ -119,6 +119,10 @@ class DialogPlugin(private val activity: Activity): Plugin(activity) {
       for (i in 0 until data.clipData!!.itemCount) {
         val uri: Uri = data.clipData!!.getItemAt(i).uri
         uris.add(uri.toString())
+        activity.contentResolver.takePersistableUriPermission(
+          uri,
+          Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+        )
       }
     }
     callResult.put("files", JSArray.from(uris.toTypedArray()))
